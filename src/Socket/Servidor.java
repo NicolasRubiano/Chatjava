@@ -6,6 +6,7 @@ import java.awt.*;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.*;
 //Hace dos tareas recibe la informacion del cliente y la segunda tarea es permanecer a la escucha todo el tiempo 
 //HILOS THREADS PARA PODER HACER AMBAS COSAS AL MISMO TIEMPO
@@ -73,6 +74,15 @@ class MarcoServidor extends JFrame implements Runnable {
 		mensaje=paquete_recibido.getMensaje();
 		
 		areatexto.append("\n"+ nick+": "+mensaje+"para "+ip);
+		
+		Socket enviadestinatario =new Socket("ip",9090);//Direccion ip de algun sevidor en este caso la mi
+		
+		ObjectOutputStream paquete_reenvio=new ObjectOutputStream(enviadestinatario.getOutputStream());
+		
+		paquete_reenvio.writeObject(paquete_recibido);
+		paquete_reenvio.close();
+		enviadestinatario.close();
+		misocket.close();
 		
 		
 		}

@@ -2,7 +2,6 @@ package Socket;
 import java.net.*;
 import java.awt.event.*;
 import java.io.*;
-import java.io.IOException;
 
 import javax.swing.*;
 
@@ -36,7 +35,7 @@ class MarcoCliente extends JFrame{
 	
 }
 
-class LaminaMarcoCliente extends JPanel{
+class LaminaMarcoCliente extends JPanel implements Runnable{
 	
 	public LaminaMarcoCliente(){
 		nick=new JTextField(5);
@@ -68,6 +67,9 @@ class LaminaMarcoCliente extends JPanel{
 		
 		add(miboton);	
 		
+		Thread mihilo=new Thread(this);
+		
+		mihilo.start();
 	}
 	
 	private class EnviaTexto implements ActionListener{
@@ -92,6 +94,8 @@ class LaminaMarcoCliente extends JPanel{
 				
 				misocket.close();
 				
+				
+				
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -110,6 +114,32 @@ class LaminaMarcoCliente extends JPanel{
 	private JTextField campo1,nick,ip;
 	
 	private JButton miboton;
+
+	@Override
+	public void run() {
+
+		try {
+			ServerSocket servidor_cliente=new ServerSocket(9090);//Pusimos a la escuha nuestra app
+			Socket cliente;
+			PaqueteEnvio paqueteRecibido;
+			
+			
+			while(true) {
+				cliente=servidor_cliente.accept();
+				
+				ObjectInputStream flujoentrada=new ObjectInputStream(cliente.getInputStream());
+				
+				paqueteRecibido=(PaqueteEnvio)  flujoentrada.readObject();
+				
+				campochat.append("\n" + paqueteRecibido.getNick()+": "+ paqueteRecibido.getMensaje());
+				
+			}
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
 	
 }
 
